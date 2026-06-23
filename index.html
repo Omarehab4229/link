@@ -45,6 +45,21 @@ body{
 .toolbar button:hover{background:#d6a932}
 
 /* ---------- cover ---------- */
+
+
+  .logo{
+    width:100px;   /* نفس حجم الـ SVG */
+    height:100px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.logo img{
+    width:100%;
+    height:100%;
+    object-fit:contain; /* يحافظ على أبعاد الصورة */
+}
 .cover{background:
    radial-gradient(120% 90% at 88% -10%, rgba(196,154,43,.22), transparent 55%),
    linear-gradient(160deg,#0A2723 0%, #0E6B5C 120%);
