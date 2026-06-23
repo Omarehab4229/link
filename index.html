@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>راقودة | مقارنة تكلفة صرف الرواتب — بنك الإنماء × منصة مُدد</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --ink:#0A2723;          /* deep emerald-ink */
+  --emerald:#0E6B5C;      /* brand primary */
+  --emerald-2:#148975;    /* lighter brand */
+  --brass:#C49A2B;        /* accent */
+  --brass-soft:#E8D9A6;
+  --slate:#5B6B74;        /* bank series (the "old") */
+  --slate-soft:#AEBCC2;
+  --save:#1E8E5A;         /* savings green */
+  --ivory:#F7F5EE;
+  --paper:#FFFFFF;
+  --line:#E4E0D3;
+  --muted:#6E7873;
+  --shadow:0 10px 30px rgba(10,39,35,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;
+  background:var(--ivory);
+  color:var(--ink);
+  line-height:1.7;
+  font-feature-settings:"tnum";
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;
+}
+.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+.page{background:var(--paper);margin:26px auto;border-radius:18px;box-shadow:var(--shadow);overflow:hidden;max-width:1040px}
+
+/* ---------- top toolbar (screen only) ---------- */
+.toolbar{position:sticky;top:0;z-index:50;background:var(--ink);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:10px 22px;font-size:13px}
+.toolbar b{color:var(--brass-soft);font-weight:600}
+.toolbar button{background:var(--brass);color:#1d1602;border:0;border-radius:8px;padding:8px 16px;font-family:inherit;font-weight:700;cursor:pointer;font-size:13px}
+.toolbar button:hover{background:#d6a932}
+
+/* ---------- cover ---------- */
+.cover{background:
+   radial-gradient(120% 90% at 88% -10%, rgba(196,154,43,.22), transparent 55%),
+   linear-gradient(160deg,#0A2723 0%, #0E6B5C 120%);
+  color:#fff;padding:54px 50px 46px;position:relative}
+.brandrow{display:flex;align-items:center;gap:14px;margin-bottom:40px}
+.logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(145deg,#148975,#0A2723);
+  border:1.5px solid rgba(232,217,166,.55);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.logo svg{width:30px;height:30px}
+.brandtext .nm{font-size:23px;font-weight:700;letter-spacing:.5px;line-height:1}
+.brandtext .tg{font-size:11.5px;color:var(--brass-soft);letter-spacing:3px;margin-top:5px}
+.eyebrow{display:inline-block;font-size:12px;letter-spacing:2px;color:var(--brass-soft);
+  border:1px solid rgba(232,217,166,.4);border-radius:30px;padding:5px 16px;margin-bottom:18px}
+.cover h1{font-size:33px;font-weight:700;line-height:1.35;max-width:620px}
+.cover h1 span{color:var(--brass-soft)}
+.cover .sub{margin-top:16px;color:#cfe6e0;font-size:15px;max-width:560px}
+.covermeta{display:flex;gap:30px;margin-top:34px;flex-wrap:wrap}
+.covermeta div .k{font-size:11px;color:#9dc4bc;letter-spacing:1px}
+.covermeta div .v{font-size:15px;font-weight:600;margin-top:3px}
+.conf{position:absolute;left:50px;bottom:20px;font-size:11px;color:#86b0a8;letter-spacing:1px}
+
+/* ---------- sections ---------- */
+.body{padding:14px 50px 50px}
+.sec{padding-top:42px}
+.sec-h{display:flex;align-items:center;gap:13px;margin-bottom:6px}
+.sec-n{flex:0 0 auto;width:34px;height:34px;border-radius:10px;background:var(--ink);color:var(--brass-soft);
+  display:flex;align-items:center;justify-content:center;font-family:"IBM Plex Mono";font-weight:600;font-size:15px}
+.sec-h h2{font-size:21px;font-weight:700;color:var(--ink)}
+.sec-lead{color:var(--muted);font-size:14.5px;margin:4px 0 20px;padding-right:47px}
+
+/* exec KPIs */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:8px}
+.kpi{background:var(--ivory);border:1px solid var(--line);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--emerald)}
+.kpi.gold::before{background:var(--brass)}
+.kpi.save::before{background:var(--save)}
+.kpi .l{font-size:12px;color:var(--muted);margin-bottom:7px;font-weight:500}
+.kpi .v{font-size:25px;font-weight:700;line-height:1}
+.kpi .v small{font-size:13px;font-weight:600;color:var(--muted)}
+.kpi .d{font-size:11.5px;color:var(--save);margin-top:6px;font-weight:600}
+
+/* compare cards (per period) */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.card{border:1px solid var(--line);border-radius:14px;padding:20px;background:#fff}
+.card.bank{border-top:4px solid var(--slate)}
+.card.mudad{border-top:4px solid var(--emerald);background:linear-gradient(180deg,#f4faf8,#fff)}
+.card .ttl{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:4px}
+.dot{width:11px;height:11px;border-radius:50%}
+.dot.b{background:var(--slate)} .dot.m{background:var(--emerald)}
+.card .big{font-size:30px;font-weight:700;margin:6px 0 2px}
+.card .big small{font-size:14px;color:var(--muted);font-weight:600}
+.card .ln{font-size:12.5px;color:var(--muted)}
+.savebar{margin-top:16px;background:linear-gradient(120deg,#0E6B5C,#148975);color:#fff;border-radius:14px;
+  padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.savebar .t{font-size:13.5px;font-weight:600}
+.savebar .a{font-size:24px;font-weight:700}
+.savebar .a small{font-size:14px;opacity:.85}
+.pct-pill{background:rgba(232,217,166,.95);color:#3a2c05;border-radius:30px;padding:4px 14px;font-weight:700;font-size:14px}
+
+/* table */
+table{width:100%;border-collapse:collapse;margin-top:18px;font-size:13px}
+thead th{background:var(--ink);color:#fff;font-weight:600;padding:11px 12px;text-align:center;font-size:12.5px}
+thead th:first-child{text-align:right;border-radius:0 10px 0 0}
+thead th:last-child{border-radius:10px 0 0 0}
+tbody td{padding:9px 12px;text-align:center;border-bottom:1px solid var(--line)}
+tbody td:first-child{text-align:right;font-weight:600;color:var(--ink)}
+tbody tr:nth-child(even){background:#faf9f4}
+tbody td.save{color:var(--save);font-weight:600}
+tfoot td{padding:11px 12px;text-align:center;font-weight:700;background:#f0ede2;border-top:2px solid var(--ink)}
+tfoot td:first-child{text-align:right}
+
+.chartbox{margin-top:20px;border:1px solid var(--line);border-radius:14px;padding:18px 16px 8px;background:#fff}
+.chartbox .ct{font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:4px;padding-right:4px}
+.chartbox .cs{font-size:11.5px;color:var(--muted);margin-bottom:10px;padding-right:4px}
+.chart-h{height:300px;position:relative}
+.chart-h.sm{height:240px}
+
+/* pricing explainer */
+.pricegrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.pcard{border:1px dashed var(--brass);background:#fdfbf3;border-radius:14px;padding:18px 18px}
+.pcard .ic{font-size:22px}
+.pcard .h{font-weight:700;font-size:15px;margin:6px 0 4px;color:var(--ink)}
+.pcard .x{font-size:13px;color:var(--muted)}
+.pcard .x b{color:var(--emerald)}
+
+/* recommendation */
+.rec{margin-top:22px;background:var(--ink);color:#fff;border-radius:16px;padding:26px 28px;position:relative;overflow:hidden}
+.rec::after{content:"";position:absolute;left:-40px;bottom:-40px;width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(196,154,43,.25),transparent 70%)}
+.rec h3{font-size:18px;color:var(--brass-soft);margin-bottom:6px}
+.rec .rl{font-size:14px;color:#cfe6e0;margin-bottom:14px}
+.reclist{list-style:none;display:grid;gap:11px;position:relative;z-index:2}
+.reclist li{display:flex;gap:11px;font-size:14px;align-items:flex-start}
+.reclist .ck{flex:0 0 auto;width:22px;height:22px;border-radius:7px;background:var(--emerald);
+  display:flex;align-items:center;justify-content:center;font-size:13px;margin-top:2px}
+.reclist b{color:#fff}
+
+.note{margin-top:18px;font-size:12px;color:var(--muted);background:#faf9f4;border-right:3px solid var(--brass);
+  border-radius:0 10px 10px 0;padding:12px 16px}
+.note b{color:var(--ink)}
+
+footer{background:var(--ink);color:#9dc4bc;padding:20px 50px;font-size:12px;display:flex;
+  justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+footer .fb{display:flex;align-items:center;gap:9px;color:#fff;font-weight:600;font-size:14px}
+footer .fb svg{width:20px;height:20px}
+
+@media(max-width:760px){
+  .body,.cover{padding-left:24px;padding-right:24px}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .vs,.pricegrid{grid-template-columns:1fr}
+  .cover h1{font-size:25px}
+  .sec-lead{padding-right:0}
+  footer{padding:18px 24px}
+}
+@media print{
+  body{background:#fff}
+  .toolbar{display:none}
+  .page{box-shadow:none;margin:0;border-radius:0;max-width:100%}
+  .sec{break-inside:avoid}
+  .chartbox,.vs,.rec,.kpis,table{break-inside:avoid}
+  .cover{break-after:page}
+  @page{size:A4;margin:12mm}
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span>تقرير راقودة — <b>مقارنة تكلفة صرف الرواتب: بنك الإنماء × منصة مُدد</b></span>
+  <button onclick="window.print()">🖨️ تصدير PDF</button>
+</div>
+
+<div class="page">
+
+  <!-- ============ COVER ============ -->
+  <div class="cover">
+    <div class="brandrow">
+      <div class="logo">
+        <svg viewBox="0 0 100 100" fill="none">
+          <path d="M22 70c0-20 11-34 30-34 11 0 18 6 18 16 0 9-6 15-15 15" stroke="#E8D9A6" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="71" cy="33" r="6" fill="#C49A2B"/>
+        </svg>
+      </div>
+      <div class="brandtext">
+        <div class="nm">راقودة</div>
+        <div class="tg">RAQOUDAH · HR ADVISORY</div>
+      </div>
+    </div>
+
+    <span class="eyebrow">دراسة تحليل تكلفة · موارد بشرية</span>
+    <h1>مقارنة تكلفة صرف الرواتب بين <span>بنك الإنماء</span> ومنصة <span>مُدد</span></h1>
+    <p class="sub">تحليل فعلي لرسوم العمولة المستقطعة، مع توقّع تكلفة ما بعد التوسّع وتقدير التوفير السنوي.</p>
+
+    <div class="covermeta">
+      <div><div class="k">الفترة المُحلَّلة</div><div class="v">يناير 2025 — ديسمبر 2026</div></div>
+      <div><div class="k">إجمالي الرواتب المصروفة</div><div class="v num">11,101,997.58 ر.س</div></div>
+      <div><div class="k">متوسط عدد الموظفين</div><div class="v num">263 موظفًا</div></div>
+      <div><div class="k">العملة</div><div class="v">الريال السعودي (ر.س)</div></div>
+    </div>
+    <div class="conf">وثيقة داخلية — لأغراض اتخاذ القرار الإداري والمالي</div>
+  </div>
+
+  <div class="body">
+
+    <!-- ============ EXEC SUMMARY ============ -->
+    <section class="sec" id="summary">
+      <div class="sec-h"><div class="sec-n">٠</div><h2>الملخص التنفيذي</h2></div>
+      <p class="sec-lead">منصة مُدد توفّر تكلفة صرف أقل في كل الفترات المدروسة، ويتّسع فارق التوفير كلما زادت قيمة الرواتب — لأن عمولة البنك نسبة من إجمالي الرواتب، بينما رسوم مُدد ثابتة تقريبًا على عدد الموظفين.</p>
+      <div class="kpis">
+        <div class="kpi gold">
+          <div class="l">تكلفة بنك الإنماء (الفترة التاريخية)</div>
+          <div class="v num">22,185 <small>ر.س</small></div>
+          <div class="d" style="color:var(--muted)">17 شهرًا · 0.20% من الرواتب</div>
+        </div>
+        <div class="kpi">
+          <div class="l">تكلفة مُدد لنفس الفترة</div>
+          <div class="v num">14,716 <small>ر.س</small></div>
+          <div class="d" style="color:var(--muted)">3 ر.س/موظف + باقة سنوية</div>
+        </div>
+        <div class="kpi save">
+          <div class="l">إجمالي التوفير (التاريخي)</div>
+          <div class="v num">7,469 <small>ر.س</small></div>
+          <div class="d">↓ بنسبة 33.7%</div>
+        </div>
+        <div class="kpi save">
+          <div class="l">التوفير السنوي المتوقع بعد التوسّع</div>
+          <div class="v num">7,578 <small>ر.س</small></div>
+          <div class="d">↓ بنسبة 35.6% سنويًا</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION 1: 2025 ============ -->
+    <section class="sec" id="s1">
+      <div class="sec-h"><div class="sec-n">١</div><h2>مقارنة سنة 2025 كاملة (يناير — ديسمبر)</h2></div>
+      <p class="sec-lead">المبالغ التي دُفعت فعليًا لبنك الإنماء مقابل المبالغ التي كانت ستُدفع لو اعتمدنا منصة مُدد لنفس الموظفين.</p>
+
+      <div class="vs">
+        <div class="card bank">
+          <div class="ttl"><span class="dot b"></span>بنك الإنماء — مدفوع فعليًا</div>
+          <div class="big num">15,421.50 <small>ر.س</small></div>
+          <div class="ln">عمولة بنسبة 0.20% من إجمالي رواتب 7.6 مليون ر.س</div>
+        </div>
+        <div class="card mudad">
+          <div class="ttl"><span class="dot m"></span>منصة مُدد — التكلفة البديلة</div>
+          <div class="big num">10,262.00 <small>ر.س</small></div>
+          <div class="ln">9,342 ر.س رسوم تحويل (3×الموظفين) + 920 ر.س باقة سنوية</div>
+        </div>
+      </div>
+      <div class="savebar">
+        <span class="t">التوفير لو استخدمنا مُدد خلال 2025</span>
+        <span class="a num">5,159.50 <small>ر.س</small></span>
+        <span class="pct-pill">توفير 33.5%</span>
+      </div>
+
+      <div class="chartbox">
+        <div class="ct">العمولة الشهرية: بنك الإنماء × مُدد — 2025</div>
+        <div class="cs">يتضح ثبات تكلفة مُدد قرب 700–840 ر.س مقابل تذبذب عمولة البنك مع حجم الرواتب.</div>
+        <div class="chart-h"><canvas id="ch2025"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION 2: Jan-May 2026 ============ -->
+    <section class="sec" id="s2">
+      <div class="sec-h"><div class="sec-n">٢</div><h2>مقارنة 2026 حتى الآن (يناير — مايو)</h2></div>
+      <p class="sec-lead">نفس المنهجية مطبّقة على أول خمسة أشهر من 2026، مع احتساب نصيب الفترة من الباقة السنوية لمُدد.</p>
+
+      <div class="vs">
+        <div class="card bank">
+          <div class="ttl"><span class="dot b"></span>بنك الإنماء — مدفوع فعليًا</div>
+          <div class="big num">6,763.50 <small>ر.س</small></div>
+          <div class="ln">5 أشهر · عمولة فعلية ≈ 0.194% من الرواتب</div>
+        </div>
+        <div class="card mudad">
+          <div class="ttl"><span class="dot m"></span>منصة مُدد — التكلفة البديلة</div>
+          <div class="big num">4,454.33 <small>ر.س</small></div>
+          <div class="ln">4,071 ر.س تحويلات + 383.33 ر.س نصيب الباقة (5/12)</div>
+        </div>
+      </div>
+      <div class="savebar">
+        <span class="t">التوفير في أول 5 أشهر من 2026</span>
+        <span class="a num">2,309.17 <small>ر.س</small></span>
+        <span class="pct-pill">توفير 34.1%</span>
+      </div>
+
+      <div class="chartbox">
+        <div class="ct">العمولة الشهرية: بنك الإنماء × مُدد — يناير حتى مايو 2026</div>
+        <div class="chart-h sm"><canvas id="ch2026"></canvas></div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION 3: Projection ============ -->
+    <section class="sec" id="s3">
+      <div class="sec-h"><div class="sec-n">٣</div><h2>توقّع يونيو — ديسمبر 2026 بعد التوسّع</h2></div>
+      <p class="sec-lead">بدخول نحو 80 موظفًا جديدًا (إجمالي ≈ 355 موظفًا) وزيادة الرواتب الشهرية بنحو 190,000 ر.س لتصل إلى ≈ 886,599 ر.س شهريًا — يتّسع الفارق لصالح مُدد لأن تكلفة البنك تنمو مع قيمة الرواتب بينما تنمو مُدد بمعدّل ضئيل مع عدد الموظفين.</p>
+
+      <div class="vs">
+        <div class="card bank">
+          <div class="ttl"><span class="dot b"></span>بنك الإنماء — كم النسبة؟</div>
+          <div class="big num">1,773.20 <small>ر.س/شهر</small></div>
+          <div class="ln">0.20% × 886,599 ر.س &nbsp;→&nbsp; 7 أشهر = <b class="num">12,412.39 ر.س</b></div>
+        </div>
+        <div class="card mudad">
+          <div class="ttl"><span class="dot m"></span>منصة مُدد — كم النسبة؟</div>
+          <div class="big num">1,065.00 <small>ر.س/شهر</small></div>
+          <div class="ln">3 ر.س × 355 موظف &nbsp;→&nbsp; 7 أشهر = 7,455 + باقة 536.67 = <b class="num">7,991.67 ر.س</b></div>
+        </div>
+      </div>
+      <div class="savebar">
+        <span class="t">التوفير المتوقع خلال يونيو — ديسمبر 2026</span>
+        <span class="a num">4,420.72 <small>ر.س</small></span>
+        <span class="pct-pill">توفير 35.6%</span>
+      </div>
+
+      <div class="chartbox">
+        <div class="ct">التكلفة الشهرية بعد التوسّع: نسبة البنك مقابل رسوم مُدد</div>
+        <div class="cs">عمولة البنك تقفز إلى 1,773 ر.س شهريًا مع كبر مبلغ الرواتب، بينما تظل مُدد عند 1,065 ر.س.</div>
+        <div class="chart-h sm"><canvas id="chProj"></canvas></div>
+      </div>
+
+      <div class="note"><b>افتراضات التوقّع:</b> اعتُمدت نسبة بنك الإنماء عند 0.20% (النسبة المرجعية من بياناتها التاريخية)، وزيادة الرواتب بمقدار 190,000 ر.س وعدد 80 موظفًا اعتبارًا من يونيو 2026، مع توزيع الباقة السنوية على أشهر الفترة (7/12).</div>
+    </section>
+
+    <!-- ============ HOW MUDAD PRICING WORKS ============ -->
+    <section class="sec" id="pricing">
+      <div class="sec-h"><div class="sec-n">٤</div><h2>كيف تُحتسب رسوم منصة مُدد؟</h2></div>
+      <p class="sec-lead">على عكس البنك الذي يخصم نسبة من إجمالي الرواتب، تعتمد مُدد على رسم ثابت للموظّف وباقة سنوية ثابتة.</p>
+      <div class="pricegrid">
+        <div class="pcard">
+          <div class="ic">👤</div>
+          <div class="h">رسوم التحويل — 3 ر.س للموظّف الواحد</div>
+          <div class="x">تُحتسب على <b>عدد الموظفين فقط</b> وليست نسبة من الرواتب. مثال: 355 موظفًا = <b>1,065 ر.س</b> شهريًا بغضّ النظر عن قيمة الرواتب.</div>
+        </div>
+        <div class="pcard">
+          <div class="ic">📦</div>
+          <div class="h">باقة سنوية ثابتة — 920 ر.س</div>
+          <div class="x">قيمة ثابتة <b>شاملة الضريبة</b> تُدفع مرة واحدة سنويًا، ولا تتأثر بعدد الموظفين أو حجم الرواتب.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RECOMMENDATION ============ -->
+    <section class="sec" id="rec">
+      <div class="rec">
+        <h3>التوصية</h3>
+        <div class="rl">نوصي بتحويل صرف الرواتب إلى منصة مُدد للأسباب التالية:</div>
+        <ul class="reclist">
+          <li><span class="ck">✓</span><div><b>توفير أكبر في التكلفة:</b> توفير يتراوح بين 33% و36% في كل الفترات، يصل إلى نحو <b class="num">7,578 ر.س سنويًا</b> بعد التوسّع — ويزيد كلما زادت الرواتب.</div></li>
+          <li><span class="ck">✓</span><div><b>رفع تلقائي لحماية الأجور:</b> الالتزام بنظام حماية الأجور يتم تلقائيًا عبر المنصة دون رفع ملفات يدوية.</div></li>
+          <li><span class="ck">✓</span><div><b>جهد تشغيلي أقل:</b> أتمتة الصرف والتحقق تقلّل العمل اليدوي واحتمالية الخطأ في كل دورة رواتب.</div></li>
+          <li><span class="ck">✓</span><div><b>تكلفة واضحة وقابلة للتنبؤ:</b> 3 ر.س لكل موظف + باقة سنوية ثابتة 920 ر.س (شاملة الضريبة)، بدلًا من نسبة متغيّرة على إجمالي الرواتب.</div></li>
+        </ul>
+      </div>
+      <div class="note"><b>ملاحظة منهجية:</b> عمولة بنك الإنماء مأخوذة من تقرير الرواتب الفعلي (≈0.20% من إجمالي الرواتب)، وتكلفة مُدد محسوبة بواقع 3 ر.س لكل موظف صرف له راتب في الشهر + توزيع الباقة السنوية (920 ر.س) على الفترة. الأرقام مبنية على البيانات المرفقة من يناير 2025 حتى مايو 2026.</div>
+    </section>
+
+  </div><!-- /body -->
+
+  <footer>
+    <div class="fb">
+      <svg viewBox="0 0 100 100" fill="none"><path d="M22 70c0-20 11-34 30-34 11 0 18 6 18 16 0 9-6 15-15 15" stroke="#E8D9A6" stroke-width="8" stroke-linecap="round"/><circle cx="71" cy="33" r="7" fill="#C49A2B"/></svg>
+      راقودة · للاستشارات والموارد البشرية
+    </div>
+    <div>أُعدّ هذا التقرير لأغراض اتخاذ القرار · جميع المبالغ بالريال السعودي</div>
+  </footer>
+
+</div><!-- /page -->
+
+<script>
+const ARFONT = "IBM Plex Sans Arabic";
+const SLATE="#5B6B74", EM="#0E6B5C", BRASS="#C49A2B", SAVE="#1E8E5A";
+Chart.defaults.font.family = ARFONT;
+Chart.defaults.font.size = 12;
+Chart.defaults.color = "#5B6B74";
+
+const money = v => v.toLocaleString('en-US',{maximumFractionDigits:0}) + " ر.س";
+
+const baseOpts = (stepUp) => ({
+  responsive:true, maintainAspectRatio:false,
+  interaction:{mode:'index',intersect:false},
+  plugins:{
+    legend:{position:'top',labels:{usePointStyle:true,pointStyle:'circle',padding:18,boxWidth:8,font:{size:12.5}}},
+    tooltip:{rtl:true,backgroundColor:'#0A2723',padding:11,cornerRadius:8,titleFont:{family:ARFONT},bodyFont:{family:ARFONT},
+      callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.y.toLocaleString('en-US',{maximumFractionDigits:2})} ر.س`}}
+  },
+  scales:{
+    y:{beginAtZero:false,grid:{color:'#EFEDE3'},ticks:{callback:v=>v.toLocaleString('en-US')}},
+    x:{grid:{display:false},ticks:{font:{size:11}}}
+  }
+});
+
+// ---- 2025 monthly ----
+const m25=['ينا','فبر','مار','إبر','ماي','يون','يول','أغس','سبت','أكت','نوف','ديس'];
+const bank25=[1299.5,1207.5,1196,1219,1282.25,1276.5,1270.75,1299.5,1311,1305.25,1368.5,1385.75];
+const mud25 =[789,738,723,747,777,768,771,783,789,792,828,837];
+new Chart(document.getElementById('ch2025'),{
+  type:'line',
+  data:{labels:m25,datasets:[
+    {label:'بنك الإنماء',data:bank25,borderColor:SLATE,backgroundColor:'rgba(91,107,116,.10)',borderWidth:2.5,tension:.35,fill:true,pointRadius:3,pointBackgroundColor:SLATE},
+    {label:'منصة مُدد',data:mud25,borderColor:EM,backgroundColor:'rgba(14,107,92,.12)',borderWidth:2.5,tension:.35,fill:true,pointRadius:3,pointBackgroundColor:EM}
+  ]},
+  options:baseOpts()
+});
+
+// ---- Jan-May 2026 ----
+const m26=['يناير','فبراير','مارس','إبريل','مايو'];
+const bank26=[1380,1322.5,1328.25,1364.25,1368.5];
+const mud26 =[831,795,798,822,825];
+new Chart(document.getElementById('ch2026'),{
+  type:'bar',
+  data:{labels:m26,datasets:[
+    {label:'بنك الإنماء',data:bank26,backgroundColor:SLATE,borderRadius:6,barPercentage:.62},
+    {label:'منصة مُدد',data:mud26,backgroundColor:EM,borderRadius:6,barPercentage:.62}
+  ]},
+  options:baseOpts()
+});
+
+// ---- Projection Jun-Dec 2026 ----
+const mp=['يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const bankP=Array(7).fill(1773.20);
+const mudP =Array(7).fill(1065);
+new Chart(document.getElementById('chProj'),{
+  type:'bar',
+  data:{labels:mp,datasets:[
+    {label:'بنك الإنماء (0.20%)',data:bankP,backgroundColor:SLATE,borderRadius:6,barPercentage:.6},
+    {label:'منصة مُدد (3 ر.س/موظف)',data:mudP,backgroundColor:EM,borderRadius:6,barPercentage:.6}
+  ]},
+  options:baseOpts()
+});
+</script>
+</body>
+</html>
